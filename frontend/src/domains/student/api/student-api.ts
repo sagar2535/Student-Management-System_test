@@ -9,15 +9,15 @@ import {
   StudentProps,
   StudentPropsWithId
 } from '../types';
-import { getQueryString } from '@/utils/helpers/get-query-string';
 
 export const studentApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getStudents: builder.query<StudentData, StudentFilter>({
-      query: (payload) => {
-        const queryString = getQueryString(payload);
-        return `/students${queryString}`;
-      },
+      query: (payload) => ({
+        url: `/students/get-students`,
+        method: 'POST',
+        body: payload
+      }),
       providesTags: (result) =>
         result?.students?.map(({ id }) => {
           return { type: Tag.STUDENTS, id };
@@ -31,13 +31,13 @@ export const studentApi = api.injectEndpoints({
       query: ({ id, status }) => ({
         url: `/students/${id}/status`,
         method: 'POST',
-        body: { status }
+        body: { id, status }
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: Tag.STUDENTS, id }]
     }),
     addStudent: builder.mutation<AddStudent, StudentProps>({
       query: (payload) => ({
-        url: `/students`,
+        url: `/students/add-student`,
         method: 'POST',
         body: payload
       }),
@@ -53,6 +53,13 @@ export const studentApi = api.injectEndpoints({
     }),
     getTeachers: builder.query<GetTeachers, void>({
       query: () => `/teachers`
+    }),
+    deleteStudent: builder.mutation<{ message: string }, number>({
+      query: (id) => ({
+        url: `/students/${id}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: (_result, _error, id) => [{ type: Tag.STUDENTS, id }]
     })
   })
 });
@@ -63,5 +70,6 @@ export const {
   useReviewStudentStatusMutation,
   useAddStudentMutation,
   useUpdateStudentMutation,
-  useGetTeachersQuery
+  useGetTeachersQuery,
+  useDeleteStudentMutation
 } = studentApi;

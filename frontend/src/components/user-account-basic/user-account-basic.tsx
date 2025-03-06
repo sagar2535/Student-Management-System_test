@@ -1,6 +1,15 @@
 import * as React from 'react';
 import { Box, ListItemIcon, ListItemText, MenuItem, Paper, Typography } from '@mui/material';
-import { Block, CheckCircle, Edit, Email, Key, LockReset, Visibility } from '@mui/icons-material';
+import {
+  Block,
+  CheckCircle,
+  DeleteForever,
+  Edit,
+  Email,
+  Key,
+  LockReset,
+  Visibility
+} from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
@@ -72,19 +81,24 @@ export const UserAccountBasic = ({ data }: { data: UserAccountBasicDataProps }) 
   };
   const onSave = async () => {
     try {
-      setState((prevState) => ({ ...prevState, isSaving: !prevState.isSaving }));
+      setState((prevState) => ({ ...prevState, isSaving: true }));
       const { userId, menuAction } = state;
       const result = await handleAction(menuAction, userId);
       toast.info(result?.message);
-      toggleModal();
+      setState(initialState);
     } catch (error) {
       toast.error(getErrorMsg(error as FetchBaseQueryError | SerializedError).message);
     } finally {
-      setState((prevState) => ({ ...prevState, isSaving: !prevState.isSaving }));
+      setState((prevState) => ({ ...prevState, isSaving: false }));
     }
   };
 
   const menuActions = [
+    {
+      action: 'DELETE_STUDENT',
+      icon: <DeleteForever />,
+      text: 'Delete'
+    },
     {
       action: userType === 'staff' ? 'DISABLE_STAFF_STATUS' : 'DISABLE_STUDENT_STATUS',
       icon: <Block />,
