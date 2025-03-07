@@ -6,7 +6,7 @@ const handleLogin = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
     const { accessToken, refreshToken, csrfToken, accountBasic } = await login(username, password);
 
-    clearAllCookies(res);
+    // clearAllCookies(res);
     setAllCookies(res, accessToken, refreshToken, csrfToken);
 
     res.json(accountBasic);
